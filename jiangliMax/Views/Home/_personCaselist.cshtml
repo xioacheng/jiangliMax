@@ -1,0 +1,84 @@
+﻿<!--案件列表的单个模板-->
+@model DataDeal.Models.M_Case
+@if (Model.StateOfCase == DataDeal.WholeSituation.CaseState.PUBLISH)
+{
+    <div class="caselistitem">
+        @*<p>案件类型:家政</p>*@
+        <div class="head">
+            <!--发布案件的用户头像-->
+            <span>
+                @{ var headimg = getHeadImg.GetHeadById(Model.PublisherId); }
+                @if (headimg == null)
+                {
+                    <img src="~/img/Homeimg/0.jpg" height="24" />
+                }
+                else
+                {
+                    <img src="@headimg" height="24" />
+                }
+            </span>
+            <!--发布案件的用户name-->
+            <a>@Model.Publisher</a>
+            <div class="content">
+                <!--案件标题-->
+                <h2>
+                    <a href="/home/article?id=@Model.ID">标题：@Model.Title</a>
+                </h2>
+                <!--案件详细信息-->
+                <div class="shottxt">
+                    <span>
+                        @getDateTime.getHtmlChina(Model.StatementOfCase)
+                        @*@Html.Raw(@Model.StatementOfCase)*@
+                    </span>
+                </div>
+            </div>
+            <!--案件裁决评论信息简介-->
+            <div class="bottom">
+                <p style="color:gray">发布时间:@getDateTime.Get(Model.DateOfBegin)</p>
+            </div>
+        </div>
+    </div>
+}
+@if (Model.StateOfCase == DataDeal.WholeSituation.CaseState.DRAFT)
+{
+    <div class="caselistitem">
+        @*<p>案件类型:家政</p>*@
+        <div class="head">
+            <!--发布案件的用户头像-->
+            <span>
+                @{ var headimg = getHeadImg.GetHeadById(Model.PublisherId); }
+                @if (headimg == null)
+                {
+                    <img src="~/img/Homeimg/0.jpg" height="24" />
+                }
+                else
+                {
+                    <img src="@headimg" height="24" />
+                }
+            </span>
+            <!--发布案件的用户name-->
+            <a>@Model.Publisher</a>
+            <div class="content">
+                <!--案件标题-->
+                <h2>
+                    <a href="/home/draft?caseid=@Model.ID&username=@Model.Publisher" style="float:left">标题：@Model.Title</a>
+                </h2>
+                <a class="btn btn-danger pull-right" style="color:#fff;font-size:12px" href="/home/deletedraft?caseid=@Model.ID&username=@Model.Publisher">删除草稿模板</a>
+                <div style="clear:both"></div>
+                <!--案件详细信息-->
+                <div class="shottxt">
+                    <span>
+                        @getDateTime.getHtmlChina(Model.StatementOfCase)
+                        @*@Html.Raw(@Model.StatementOfCase)*@
+                    </span>
+                </div>
+            </div>
+            <!--案件裁决评论信息简介-->
+            <div class="bottom">
+                <p style="color:gray">草稿时间:@getDateTime.Get(Model.DateOfBegin)</p>
+            </div>
+        </div>
+    </div>
+}
+
+

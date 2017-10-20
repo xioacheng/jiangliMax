@@ -1,0 +1,164 @@
+﻿
+@{
+    ViewBag.Title = "讲理-添加裁决";
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+@model DataDeal.Models.RepositoryModal.Verdict
+<link rel="stylesheet" href="~/Content/bootstrap-slider.min.css"/>
+<script src="~/Scripts/bootstrap-slider.min.js"></script>
+<script src="~/Scripts/Home/verdict.js"></script>
+<!--案件裁决界面-->
+@{var Citem = ViewBag.Case as DataDeal.Models.M_Case; }
+<div class="verdict">
+    <div class="verdict-content">
+        <div class="panel panel-info">
+            <!--案件裁决提示内容-->
+            <div class="panel-heading">
+                关于案件的裁决：@Citem.Title 
+            </div>
+            <div id='rootwizard' class='form-wizard form-wizard-horizontal' style="min-height:730px;">
+                <!--裁决的form表单-->
+                @using (Html.BeginForm("verdict", "home", new { }, FormMethod.Post, new { @class = "form floating-label form-validation" , onSubmit ="return verdictCheak()"}))
+                {
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(t=>t.caseid, new { Value = Citem.ID,style="display:none" })
+                    <div class='form-wizard-nav'>
+                        <div class='progress' style="height:35px">
+                            <a href="/home/article?id=@Citem.ID" class="btn btn-danger pull-right" style="width:800px">取消裁决</a>
+                        </div>
+                        <!--裁决分布显示标题-->
+                        <ul class='nav nav-justified'>
+                            <li>
+                                <a href='#step1' data-toggle='tab'>
+                                    <span class='title'>第一步：赔偿方式</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href='#step2' data-toggle='tab'>
+                                    <span class='title'>第二步：创建裁决</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--选择和输入裁决内容-->
+                    <div class='tab-content clearfix' id="showtab">
+                        <div class='tab-pane' id='step1'>
+                            <br /><br />
+                            <!--裁决类型-->
+                            <div class='col-sm-10 col-sm-offset-1'>
+                                <div class='form-group'>
+                                    <label for='type' class='control-label'>请选择类型</label>
+                                    <div>
+                                        <label class="radio">
+                                            <input type="radio" name="pctype" checked="checked" value="1" />必须赔偿（应诉人必须向投诉人赔偿）
+                                        </label>
+                                        <label class="radio">
+                                            <input type="radio" name="pctype" value="2" />互不赔偿（应诉人与投诉人不需要相互赔偿）
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='tab-pane' id='step2'>
+                            <br /><br />
+                            <!--裁决赋值内容输入-->
+                            <div class='col-sm-10 col-sm-offset-1'>
+                                <div class='form-group' id="paySure">
+                                    <div style="float:left">
+                                        <label for='name' class='control-label' style="width:400px">你认为对投诉人最合理的赔偿金额是?</label>
+                                    </div>
+                                    @Html.TextBoxFor(t => t.moneySure, new { @class = "form-control", style = "width:100px;float:left",onkeyup = "this.value = this.value.replace(/\\D/g, '');", onChange= "keyChange()", id = "paySureNum" ,Value="0"})<h4>元</h4>
+                                    @*this.value = this.value.replace(/\\D/g, ''); 只能输入数字*@
+                                    <p style="color:red;display:none" id="jine">金额必须是数字</p>
+                                </div>
+                                <div class='form-group' style="margin-top:40px" id="nopayDegree">
+                                    <div style="float:left">
+                                        <label for='name' class='control-label' style="width:400px">如果不赔偿你的满意度是?</label>
+                                    </div>
+                                    <!--不赔偿的满意度显示-->
+                                    @Html.TextBoxFor(t=>t.nopay, new { @class = "form-control", style = "width:100px;border:none;", onchange = "nopayChange()", id = "noPay" })
+                                    <!--不赔偿的滑块-->
+                                    <input id="ex1" onchange="outnoPay()" data-slider-id='ex1Slider' type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="0.1" data-slider-value="0" style="width:630px" />
+                                    <img class="img-responsive" style="text-align:center;width:800px;height:60px" src="~/img/Homeimg/slider.png" />
+                                </div>
+                                <div class='form-group'>
+                                    <div style="float:left" id="PC1">
+                                        <label for='name' class='control-label' style="width:400px">如果赔偿<input style="width:100px" id="doublePayNum" disabled="disabled"/>元你的满意度是?</label>
+                                    </div>
+                                    <div style="float:left" id="PC2">
+                                        <label for='name' class='control-label' style="width:400px">如果赔偿 @Citem.originalpay 元你的满意度是?</label>
+                                    </div>
+                                    <!--两倍赔偿满意度显示-->
+                                    @Html.TextBoxFor(t=>t.doublepay,new { @class = "form-control", style = "width:100px;border:none" , onchange = "doublepayChange()", id = "doublePay" })
+                                    <!--两倍赔偿滑块-->
+                                    <input id="ex2" onchange="outdoublePay()" data-slider-id='ex1Slider' type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="0.1" data-slider-value="0" style="width:630px" />
+                                    <img class="img-responsive" style="text-align:center;width:800px;height:60px" src="~/img/Homeimg/slider.png" />
+                                </div>
+                                @if (Citem.OtherPay1 != null)
+                                {
+                                    <div class='form-group'>
+                                        <div style="float:left">
+                                            <label for='name' class='control-label' style="width:400px">额外赔偿方式1的满意度: @Citem.OtherPay1</label>
+                                        </div>
+                                        <!--额外赔偿方式1-->
+                                        @Html.TextBoxFor(t => t.OtherNum1, new { @class = "form-control", style = "width:100px;border:none", onchange = "Other1Change()", id = "OtherNum1" })
+                                        <!--滑块-->
+                                        <input id="ex3" onchange="Other1Pay()" data-slider-id='ex1Slider' type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="0.1" data-slider-value="0" style="width:630px" />
+                                    </div>
+                                }
+                                @if (Citem.OtherPay2 != null)
+                                {
+                                    <div class='form-group'>
+                                        <div style="float:left">
+                                            <label for='name' class='control-label' style="width:400px">额外赔偿方式2的满意度: @Citem.OtherPay2</label>
+                                        </div>
+                                        <!--额外赔偿方式2-->
+                                        @Html.TextBoxFor(t => t.OtherNum2, new { @class = "form-control", style = "width:100px;border:none", onchange = "Other2Change()", id = "OtherNum2" })
+                                        <!--滑块-->
+                                        <input id="ex4" onchange="Other2Pay()" data-slider-id='ex1Slider' type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="0.1" data-slider-value="0" style="width:630px" />
+                                    </div>
+                                }
+                                @if (Citem.OtherPay3 != null)
+                                {
+                                    <div class='form-group'>
+                                        <div style="float:left">
+                                            <label for='name' class='control-label' style="width:400px">额外赔偿方式3的满意度: @Citem.OtherPay3</label>
+                                        </div>
+                                        <!--额外赔偿方式3-->
+                                        @Html.TextBoxFor(t => t.OtherNum3, new { @class = "form-control", style = "width:100px;border:none", onchange = "Other3Change()", id = "OtherNum3" })
+                                        <!--滑块-->
+                                        <input id="ex5" onchange="Other3Pay()" data-slider-id='ex1Slider' type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="0.1" data-slider-value="0" style="width:630px" />
+                                    </div>
+                                }
+                               
+
+                                <div class='form-group'>
+                                    <label for='name' class='control-label'>你这样赋值的理由是什么？</label>
+                                    @Html.TextBoxFor(t=>t.reason, new {@class="form-control", style = "width:600px" })
+                                </div>
+                                <div class='form-group'>
+                                    <input type="submit" class="btn btn-danger" value="提交" style="width:600px" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--步骤选择-->
+                    <div class='col-sm-10 col-sm-offset-1 no-padding'>
+                        <ul class='pager wizard'>
+                            <li class='previous'><a class='btn btn-default' href='javascript:void(0);'>上一步</a></li>
+                            <li class="next"><a class='btn btn-default' href='javascript:void(0);'>下一步</a></li>
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!--赋值说明须知-->
+    <div class="verdict-notice">
+        <h3 style="text-align:center">《赋值须知》</h3>
+        <p><b>• 1、</b> 单点赋值所填内容是传统调查模式中个人最认可金额。</p>
+        <p><b>• 2、</b> 三点赋值是通过赋值人员给出个人最认可金额外，针对其他两个（特殊情况下只有一个）并非最满意的金额给出自己的认可程度，在这里用满意度表示，数值越高（最高10）表示越满意，反之（最低-10）则表示越不满意。</p>
+        <p><b>• 3、</b> 赋值人员依照双方或单方对事实的描述，给出自己真实的主观看法即可，不许顾虑其它因素。</p>
+    </div>
+</div>
+

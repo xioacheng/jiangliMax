@@ -1,0 +1,44 @@
+﻿<!--案件列表的单个模板-->
+@model DataDeal.Models.RepositoryModal.HomeCase
+@using Microsoft.AspNet.Identity
+<div class="caselistitem">
+    @*<p>案件类型:家政</p>*@
+    <div class="head">
+        <!--发布案件的用户头像-->
+        <span>
+            @{ var headimg = getHeadImg.GetHeadById(Model.publishid); }
+            @if (headimg == null)
+            {
+                <img src="~/img/Homeimg/0.jpg" height="24"/>
+            }
+            else
+            {
+                <img src="@headimg" height="24" />
+            }
+        </span>
+        <!--发布案件的用户name-->
+        <a href="/home/person?userid=@Model.publishid">@Model.publishname</a>
+        <div class="content">
+            <!--案件标题-->
+            <h2>
+                <a href="/home/article?id=@Model.caseid">@Model.casetitle</a>
+            </h2>
+            <!--案件详细信息-->
+            <div class="shottxt">
+                <span>
+                    @getDateTime.getHtmlChina(Model.casecontent)
+                    @*@Html.Raw(Model.casecontent)*@
+                </span>
+            </div>
+        </div>
+        <!--案件裁决评论信息简介-->
+        <div class="bottom">
+            <span>
+                <a class="btn btn-info" style="color:#fff" href="/home/article?id=@Model.caseid">关注 <i>@Model.followlist.Count()</i></a>
+            </span>
+            <a>@Model.commentlist.Count() 个评论</a>
+            <a>@Model.involvelist.Count() 个裁决</a>
+            <a>发布日期: @getDateTime.Get(Model.publicdate)</a>
+        </div>
+    </div>
+</div>

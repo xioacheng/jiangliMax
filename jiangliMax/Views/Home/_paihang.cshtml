@@ -1,0 +1,21 @@
+﻿<!--首页权重排行栏-->
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <span class="panel-title">权重排行榜----前十五</span>
+        <a style="color:white;cursor:pointer;text-decoration:none;" class="pull-right">更多>></a>
+    </div>
+    <!--显示排行前十五的用户-->
+    <ul class="list-group">
+        @for (int i = 1; i <= 15; i++)
+        {
+            <li class="list-group-item">
+                <span style="width:100px;overflow:hidden"><img src="~/img/Homeimg/0.jpg" height="24" /></span>
+                <span>
+                    ANewName 
+                </span>
+                <span class="pull-right badge" accesskey="" style="color:#fff">@i</span>
+                <span style="width:100px;overflow:hidden;color:gray" class="pull-right">权重:@(100-i)</span>
+            </li>
+        }
+    </ul>
+</div>

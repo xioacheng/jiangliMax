@@ -1,0 +1,28 @@
+﻿@functions{
+    public static IHtmlString GetHeadByName(string name)
+    {
+        DataDeal.Repository.UserInfo dbuser = new DataDeal.Repository.UserInfo();
+        var user = dbuser.GetUseByName(name);
+        try
+        {
+            return new HtmlString(user.Avatar_url);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+    public static IHtmlString GetHeadById(string id)
+    {
+        DataDeal.Repository.UserInfo dbuser = new DataDeal.Repository.UserInfo();
+        var user = dbuser.GetUserById(id);
+        try
+        {
+            return new HtmlString(user.Avatar_url);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+}

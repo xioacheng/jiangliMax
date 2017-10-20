@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+
+<html>
+@using Microsoft.AspNet.Identity
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/Content/HomeCss/Home.css"/>
+    <script src="~/Scripts/jquery-1.9.1.min.js"></script>
+    <script src="~/Scripts/jquery.flot.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.bootstrap.wizard.min.js"></script>
+    <script src="~/Scripts/Home/HomeJS.js"></script>
+</head>
+<body>
+    <!--布局-->
+    <div>
+        <!--顶部固定栏-->
+        <header class="header">
+            <div class="headerinner">
+                <a style="color:#1698ee;font-size:30px;text-decoration:none" href="#">讲理</a>
+                <!--搜索框-->
+                @using (Html.BeginForm("searchCase", "home"))
+                {
+                    <div class="seacherbox">
+                        <input type="text" class="form-control" name="searchTxt" />
+                        <button type="submit" class="btn btn-primary">搜索</button>
+                    </div>
+                }
+                <!--可增减首页导航-->
+                <nav class="headerNav">
+                    <a class="headerNav-Item" href="/home/page">首页</a>
+                    <a class="headerNav-Item isActive" href="/home">话题</a>
+                </nav>
+                @if (!Request.IsAuthenticated)
+                {
+                    <div class="header-userinfo">
+                        <a type="button" class="btn btn-primary" href="/wechat">登录</a>
+                    </div>
+                }
+                else
+                {
+                    <a href="/home/publish" class="btn btn-primary">发文</a>
+                    <div class="header-userinfo">
+                        <p></p>
+                        <img src="@getHeadImg.GetHeadByName(User.Identity.Name)" height="32" onclick="javascript: window.location.href='/home/person?userid=@User.Identity.GetUserId()'" style="cursor:pointer" alt="@User.Identity.Name" id="Headimg"/>
+                        <a href="/wechat/logout" class="btn" style="margin-top:20px">退出</a>
+                    </div>
+                }
+                <!--用户登录后下拉列表-->
+                @*<div class="headerdrop" id="headerdrop">
+                    <ul>
+                        <li onclick="javascript: window.location.href='/home/person?userid=@User.Identity.GetUserId()'"><a><i class="glyphicon glyphicon-user"></i> 我的主页</a></li>
+                        <li onclick="javascript: window.location.href='#'"><a><i class="glyphicon glyphicon-cog"></i> 设置</a></li>
+                        <li onclick="javascript: window.location.href='/wechat/logout'"><a><i class="glyphicon glyphicon-off"></i> 退出</a></li>
+                    </ul>
+                </div>*@
+            </div>
+        </header>
+        
+    </div>
+    <div style="margin-top:58px;">
+        @RenderBody()
+    </div>
+    @*<script>
+        function hideshow() {
+            //用户下拉列表的显示
+                $("#headerdrop").css("display", "block");
+        }
+        //点击页面其他位置隐藏下拉列表是的阻断其他地方
+        function stopPropagation(e) {
+            if (e.stopPropagation)
+                e.stopPropagation();
+            else
+                e.cancelBubble = true;
+        }
+        //隐藏下拉列表
+        $(document).bind('click', function () {
+            $('#headerdrop').css('display', 'none');
+        });
+
+        $('#headerdrop').bind('click', function (e) {
+            stopPropagation(e);
+        });
+        $('#Headimg').bind('click', function (e) {
+            stopPropagation(e);
+        });
+    </script>*@
+</body>
+</html>

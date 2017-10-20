@@ -1,0 +1,90 @@
+﻿body {background-color:#f3f3f3;color:#262626;}
+.header {top:0;left:0;z-index:100;box-sizing:border-box;width:100%;min-width:1032px;overflow:hidden;background:#fff;position: fixed;}
+.headerinner {position:relative;display:flex;display:-webkit-box;width:1000px;height:52px;padding:0 16px;margin:0 auto;-webkit-box-align: center;align-items: center;transition: transform .3s,-webkit-transform .3s;}
+.headerinner a:hover a:visited a:link {text-decoration:none}
+.headerinner a:link {text-decoration:none}
+.headerinner a:visited {text-decoration:none}
+.seacherbox {display:flex;display:-webkit-box;margin-left:0px}
+.headerNav{display:flex;display:-webkit-box;-webkit-box-pack: justify;justify-content: space-between;height: 30px;margin-right: 18px;margin-left: 57px;color: #999;}
+.headerNav-Item{padding-left:0;padding:0 15px;font-size:15px;line-height:30px;color:#8590a6;}
+.isActive {color:#333}
+.header-userinfo{-webkit-box-flex: 1;flex: 1;-webkit-box-pack: end;justify-content: flex-end;display: flex;display:-webkit-box;-webkit-box-align: center;align-items: center;}
+.headerdrop{display:none;margin-top:85px;margin-left:910px;position:fixed;background:#fff;width:100px;padding:0;z-index:100;border:1px #e2dcdc solid;box-shadow:inset}
+.headerdrop ul{margin:0;padding:0;list-style:none}
+.headerdrop li{position:relative;height:42px;line-height:42px;padding:0 10px !important;border-top: 1px solid #f0f0f0;cursor: pointer;text-align: left;font-size: 14px;list-style-type:none}
+.headerdrop li:hover{background-color:#EEE}
+.headerdrop li a{text-decoration:none;color:#000;}
+
+.shouye{-webkit-box-align: start;align-items: flex-start;position: relative;width: 1000px;padding: 0 16px;margin: 10px auto;}
+.shouye .center{margin-right:0px;}
+.caselistitem{padding:16px 20px 20px;position:relative;background:#fff;width:700px;border-top:1px #e2dcdc solid;margin-left:50px;}
+.caselistitem p{font-size:14px;color:#8590a6;}
+.caselistitem head{display:flex;webkit-box-align: center;align-items: center;}
+.caselistitem .head a{color:inherit;text-decoration:none;font-weight:600;font-size:15px;line-height:1.1;cursor:pointer}
+.caselistitem .content{margin-top:-20px;}
+.caselistitem .content a{font-size:18px;font-weight:700;line-height:1.6}
+.caselistitem .content .shottxt{max-height:60px;overflow:hidden;}
+.caselistitem .content .shottxt span{}
+.caselistitem .bottom{margin-top:10px;}
+.caselistitem .bottom a{font-size:14px;margin-left:10px;color:gray}
+
+.paihang{position:fixed;margin-left:-300px;width:300px;}
+.rightBar{width:300px;position:fixed;margin-left:760px;}
+.rightlist{background:#fff;overflow:hidden;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.1);box-sizing: border-box;}
+.rightlist ul{padding:8px 0;margin:0;font-size:14px;border-bottom:1px solid #000;}
+.rightlist ul li{list-style-type:none;font-size:14px;margin-left:20px;margin-bottom:0px;color:red;overflow:hidden;border-bottom:1px dotted #e2dcdc;}
+.rightlist ul li span{color:gray;font-size:16px}
+.rightlist ul li a{color:#000;cursor:pointer;margin-right:10px;}
+
+.rightcenter{background:#fff;overflow:hidden;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.1);box-sizing: border-box;margin-top:10px}
+.rightcenter ul{padding:8px 0;margin:0;font-size:14px;}
+.rightcenter ul li{list-style-type:none;font-size:14px;margin-left:20px;margin-bottom:20px;border-bottom:1px solid #e2dcdc;}
+.rightcenter ul li span{color:#000;}
+.rightcenter ul li a{color:gray;cursor:pointer;margin-right:10px;color:#0d95ef}
+
+.rightbottom{color:gray;margin-top:20px;text-align:center}
+.rightbottom a{color:gray;cursor:pointer;text-decoration:none}
+.rightbottom a:hover{color:#0c74f3}
+
+.publish{width:1000px;background:#fff;margin:0 auto;}
+.publish .content{float:left;width:800px;display:block;margin:18px 0;border-right:1px solid gray;}
+.publish .content ul{display: block;margin: 0;list-style:none}
+.publish .content ul li{margin:0 0 13px 0;display: block;clear: both;list-style: none;}
+.publish .content ul li label{width: 86px;line-height: 34px;display: block;float: left;}
+.publish .content ul li label b{color:red}
+.publish .notice{text-align:left;color:gray}
+.publish .notice .mod-head h3{font-size:15px;color:black}
+.publish .notice .mod-body p{font-size:13px;}
+
+.article{margin:0 auto ;width:1300px;background:#fff;height:auto;min-height:800px}
+.article  .Aleft{float:left;width:200px;margin-left:20px;border-right:1px solid #e2dcdc;}
+.article  .Aleft .Amessage{border-top:1px solid#e2dcdc;margin-bottom:20px;margin-top:20px;}
+.article  .Aleft .Amessage p{font-weight:600;color:#f57801}
+.article  .Aleft .Amessage a{color:#0aeb61;cursor:pointer;text-decoration:none;}
+.article  .Acenter{float:left;width:700px;border-right:1px solid #e2dcdc;margin-left:0px}
+.article  .Acenter .shensu{border-bottom:1px solid #e2dcdc;margin-left:10px;margin-right:10px;}
+.article  .Acenter .shensu span{font-weight:600;font-size:16px}
+.article  .Aright{text-align:center;float:left;margin-left:10px;}
+.article  .Aright  .commentlist{text-align:left;border:1px solid #e2dcdc;height:610px;overflow:auto}
+.article  .Aright  .commentlist label{margin-right:10px;color:gray;font-size:14px;margin-top:10px}
+.article  .Aright  .commentlist a{color:#000;cursor:pointer;font-size:15px;text-decoration:none;}
+.article  .Aright  .commentlist .Ccontent{margin:10px 10px 10px 10px;border-bottom:1px solid #e2dcdc;font-size:12px;color:#262626;width:320px}
+.article  .Aright  .commentlist .Ccontent button{background-color:#e4ebf3;color:#3274ff;border:#e4ebf3}
+.article  .Aright label{font-size:15px;}
+.flot-chart {display: block;height: 300px;}
+.flot-chart-content {width: 100%;height: 100%;}
+
+.verdict{width:1000px;margin:0 auto;background:#fff;min-height:900px;}
+.verdict-content{float:left;width:800px;}
+.verdict-notice{text-align:left;}
+.verdict-notice h3{font-size:16px}
+.verdict-notice p{color:gray;font-size:13px;}
+
+.person{width:1000px;margin:0 auto;}
+.person .person-head{background:#fff;padding:20px;}
+.person .person-head .personmessage{margin-left:30px;float:left}
+.person .person-head .personmessage p{font-size:28px;color:#000;}
+.person .person-content{background:#fff;margin-top:10px;padding:10px}
+
+.personinfo{width:1000px;margin:0 auto;}
+.personinfo .editinfo{}

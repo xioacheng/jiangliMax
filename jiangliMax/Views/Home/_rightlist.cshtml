@@ -1,0 +1,81 @@
+﻿@using Microsoft.AspNet.Identity
+@model List<DataDeal.Models.RepositoryModal.HomeCase>
+@{
+    IEnumerable<DataDeal.Models.RepositoryModal.HomeCase> Caselist = new List<DataDeal.Models.RepositoryModal.HomeCase>();
+    if (Model != null)
+    {
+        Caselist = Model.OrderByDescending(t => t.followlist.Count());
+    }
+    else
+    {
+        Caselist = null;
+    }
+}
+<!--话题首页的右侧栏显示-->
+<div class="rightlist">
+    <ul>
+        <li>
+            <span>热点案件</span>
+            <ul>
+                @if (Caselist != null)
+                {
+                    if (Caselist.Count() > 0)
+                    {
+                        var first = Caselist.FirstOrDefault();
+                        <li>1、<a href="/home/article?id=@first.caseid">@first.casetitle</a></li>
+                        if (Caselist.Count() > 2)
+                        {
+                            var second = Caselist.Skip(1).Take(1).FirstOrDefault();
+                            <li>2、<a href="/home/article?id=@second.caseid">@second.casetitle</a></li>
+                            if (Caselist.Count() > 3)
+                            {
+                                var third = Caselist.Skip(2).Take(1).FirstOrDefault();
+                                <li>3、<a href="/home/article?id=@third.caseid">@third.casetitle</a></li>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <li>暂无案件</li>
+                    }
+                }
+                else
+                {
+                    <li>暂无案件</li>
+                }
+            </ul>
+        </li>
+        <li>
+            <span>热门用户</span>
+            <ul>
+                <li>1、</li>
+                <li>2、</li>
+                <li>3、</li>
+            </ul>
+        </li>
+        <li>
+            <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more">分享到：</a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a></div>
+            <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{"bdSize":16},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='https://www.jianglichina.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+            <div style="clear:both"></div>
+        </li>
+    </ul>
+</div>
+@if (Request.IsAuthenticated)
+{
+    var usercase = ViewBag.UserCase as DataDeal.Models.RepositoryModal.UserCase;
+    <div class="rightcenter">
+        <ul>
+            <li><h4>我的案件</h4></li>
+            <li><span>审核中案件(<b style="color:red">@usercase.shenhelist.Count()</b>)</span><a class="pull-right">查看</a></li>
+            <li><span>已发布案件(<b style="color:red">@usercase.fabulist.Count()</b>)</span><a class="pull-right" href="/home/person?userid=@User.Identity.GetUserId()">查看</a></li>
+            <li><span>申诉中案件(<b style="color:red">@usercase.shensulist.Count()</b>)</span><a class="pull-right">查看</a></li>
+            <li><span>已完成案件(<b style="color:red">@usercase.wanchenglist.Count()</b>)</span><a class="pull-right">查看</a></li>
+            <li><span>草稿(<b style="color:red">@usercase.caogaolist.Count()</b>)</span><a class="pull-right" href="/home/person?userid=@User.Identity.GetUserId()">查看</a></li>
+        </ul>
+    </div>
+}
+<div class="rightbottom">
+    <div>©讲理项目应用程序</div>
+    <a>京ICP备17046451号</a><br />
+    <a>联系我们</a>
+</div>

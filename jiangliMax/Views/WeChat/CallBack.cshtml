@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewBag.Title = "CallBack";
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+@model DataDeal.Models.RepositoryModal.WeChatResult
+<div class="personinfo">
+    <div class="panel panel-info">
+        <div class="panel panel-heading">
+            <div style="float:left">
+                @if (Model.userinfo.headimgurl == null)
+                {
+                    <img src="~/img/Homeimg/0.jpg" height="100" />
+                }
+                else
+                {
+                    <img src="@Model.userinfo.headimgurl" height="100" />
+                }
+            </div>
+            <div style="margin-left:30px;float:left">
+                <h3 style="color:red">信息补充</h3>
+                <p style="color:black">微信用户 @Model.userinfo.nickname 你好:网站为了其他用户和你的互动，需要您提供您的邮箱和手机号，本网站不会泄露任何您的个人隐私</p>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        @using (Html.BeginForm("Register", "wechat", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="panel panel-body">
+                <input name="country" style="display:none" value="@Model.userinfo.country" /><input name="headimgurl" style="display:none" value="@Model.userinfo.headimgurl" />
+                <input name="language" style="display:none" value="@Model.userinfo.language" /><input name="nickname" style="display:none" value="@Model.userinfo.nickname" />
+                <input name="openid" style="display:none" value="@Model.userinfo.openid" /><input name="province" style="display:none" value="@Model.userinfo.province" />
+                <input name="sex" style="display:none" value="@Model.userinfo.sex" /><input name="unionid" style="display:none" value="@Model.userinfo.unionid"/>
+                <table>
+                    <tr style="height:50px">
+                        <td style="width:100px;text-align:right">用户名:</td>
+                        <td style="width:400px;"><input type="text" class="form-control" name="username" placeholder="用户名只能为字母数字和下划线(必填)"/></td>
+                    </tr>
+                    <tr style="height:50px">
+                        <td style="width:100px;text-align:right">邮箱:</td>
+                        <td style="width:400px;"><input type="text" class="form-control" name="email" placeholder="xxxxxx@aaa.com(选填)"/></td>
+                    </tr>
+                    <tr style="height:50px">
+                        <td style="width:100px;text-align:right">电话:</td>
+                        <td style="width:400px;"><input type="text" class="form-control" name="phone" placeholder="1********(选填)"/></td>
+                    </tr>
+                    <tr style="height:50px;">
+                        <td></td>
+                        <td><input type="submit" class="btn btn-primary pull-right" value="确认信息" /></td>
+                    </tr>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+

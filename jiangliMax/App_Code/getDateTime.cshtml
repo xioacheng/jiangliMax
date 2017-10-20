@@ -1,0 +1,149 @@
+﻿@using System.Text.RegularExpressions;
+@functions {
+    public static string getHtmlChina(string strHtml)
+    {
+        string[] aryReg ={
+          @"<script[^>]*?>.*?</script>",
+
+          @"<(\/\s*)?!?((\w+:)?\w+)(\w+(\s*=?\s*(([""'])(\\[""'tbnr]|[^\7])*?\7|\w+)|.{0})|\s)*?(\/\s*)?>",
+          @"([\r\n])[\s]+",
+          @"&(quot|#34);",
+          @"&(amp|#38);",
+          @"&(lt|#60);",
+          @"&(gt|#62);",
+          @"&(nbsp|#160);",
+          @"&(iexcl|#161);",
+          @"&(cent|#162);",
+          @"&(pound|#163);",
+          @"&(copy|#169);",
+          @"&#(\d+);",
+          @"-->",
+          @"<!--.*\n"
+
+         };
+
+        string[] aryRep = {
+           "",
+           "",
+           "",
+           "\"",
+           "&",
+           "<",
+           ">",
+           " ",
+           "\xa1",//chr(161),
+           "\xa2",//chr(162),
+           "\xa3",//chr(163),
+           "\xa9",//chr(169),
+           "",
+           "\r\n",
+           ""
+          };
+
+        string newReg = aryReg[0];
+        string strOutput = strHtml;
+        for (int i = 0; i < aryReg.Length; i++)
+        {
+
+            Regex regex = new System.Text.RegularExpressions.Regex(aryReg[i], RegexOptions.IgnoreCase);
+            strOutput = regex.Replace(strOutput, aryRep[i]);
+        }
+
+        strOutput.Replace("<", "");
+        strOutput.Replace(">", "");
+        strOutput.Replace("\r\n", "");
+
+
+        return strOutput;
+    }
+    //获取案件的状态
+    public static string getCaseState(DataDeal.WholeSituation.CaseState state)
+    {
+        if(state== DataDeal.WholeSituation.CaseState.COMPLAIN)
+        {
+            return "申诉中";
+        }
+        if (state == DataDeal.WholeSituation.CaseState.DRAFT)
+        {
+            return "草稿";
+        }
+        if (state == DataDeal.WholeSituation.CaseState.FINISH)
+        {
+            return "以完成";
+        }
+        if (state == DataDeal.WholeSituation.CaseState.PENDING)
+        {
+            return "审核中";
+        }
+        if (state == DataDeal.WholeSituation.CaseState.PUBLISH)
+        {
+            return "已发布";
+        }
+        return "";
+    }
+    //获取多长时间之前
+    public static IHtmlString Get(DateTime date)//必须是静态方法
+    {
+        TimeSpan span = DateTime.Now - date;
+        if (span.TotalDays > 60)
+        {
+            return new HtmlString(date.ToShortDateString());
+        }
+        else
+        {
+            if (span.TotalDays > 30)
+            {
+                return new HtmlString("1个月前");
+            }
+            else
+            {
+                if (span.TotalDays > 14)
+                {
+                    return new HtmlString("2周前");
+                }
+                else
+                {
+                    if (span.TotalDays > 7)
+                    {
+
+                        return new HtmlString("1周前");
+                    }
+                    else
+                    {
+                        if (span.TotalDays > 1)
+                        {
+                            return new HtmlString(string.Format("{0}天前", (int)Math.Floor(span.TotalDays)));
+                        }
+                        else
+                        {
+                            if (span.TotalHours > 1)
+                            {
+                                return new HtmlString(string.Format("{0}小时前", (int)Math.Floor(span.TotalHours)));
+
+                            }
+                            else
+                            {
+                                if (span.TotalMinutes > 1)
+                                {
+                                    return new HtmlString(string.Format("{0}分钟前", (int)Math.Floor(span.TotalMinutes)));
+
+                                }
+                                else
+                                {
+                                    if (span.TotalSeconds >= 1)
+                                    {
+                                        return new HtmlString(string.Format("{0}秒前", (int)Math.Floor(span.TotalSeconds)));
+                                    }
+                                    else
+                                    {
+                                        return new HtmlString("1秒前");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,297 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "讲理-案件发布";
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+@*<script src="~/Scripts/editor/kindeditor.js"></script>*@
+<script src="~/Scripts/kindeditor/kindeditor-all-min.js"></script>
+<script src="~/Scripts/kindeditor/lang/zh-CN.js"></script>
+<script src="~/Scripts/Home/JLpublish.js"></script>
+<script>
+    var editor;
+    KindEditor.ready(function (K) {
+        // 请注意修改 textarea 的名字，我这里是 Description
+        editor = K.create('textarea[name="content"]', {
+            allowFileManager: true,//允许对上传文件进行管理
+            allowImageUpload: true,//允许对图片进行上传
+            //fileManagerJson: '/Upload/ProcessRequest',      //浏览文件方法
+            //uploadJson: '/Upload/image',    //上传文件方法  /controller/action
+        });
+    });
+</script>
+@model DataDeal.Models.RepositoryModal.casepublist
+<!--案件发布界面-->
+@{ 
+    var draft = ViewBag.draft as DataDeal.Models.M_Case;
+}
+<div class="publish">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <!--案件发布头部说明-->
+            <h3 class="panel-title">
+                发布案件
+            </h3>
+        </div>
+        <!--输入案件详细信息-->
+        @using (Html.BeginForm("publish", "home", new { }, FormMethod.Post, new { @class = "form-horizontal", role = "form", onSubmit= "return yingsurendata.check()" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="panel-body">
+                <div class="content">
+                    <ul>
+                        <li>
+                            <label>案件标题:<b>*</b></label>
+                            @if (draft != null)
+                            {
+                                @Html.TextBoxFor(m => m.casetitle, new { @class = "form-control", style = "width:500px;float:left", placeholder = "输入案件标题", id = "casetitle" ,Value=draft.Title})
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(m => m.casetitle, new { @class = "form-control", style = "width:500px;float:left", placeholder = "输入案件标题", id = "casetitle" })
+                            }
+                            <p style="color:red;display:none" id="titleerror">标题不能为空</p><div style="clear:both"></div>
+                        </li>
+                        <li>
+                            <!--投诉人默认为讲理用户-->
+                            <label>投诉人:<b>*</b></label>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <input name="publishid" value="@User.Identity.GetUserId()" hidden="hidden"/>
+                                @Html.TextBoxFor(m => m.publishname, new { @class = "form-control", style = "width:500px;", @readonly = "readonly", Value = User.Identity.Name })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(m => m.publishname, new { @class = "form-control", style = "width:500px;", @readonly = "readonly", placeholder = "默认发布案件的用户" })
+                            }
+                        </li>
+                        <li>
+                            <label>应诉人:<b>*</b></label>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                if (draft != null)
+                                {
+                                    @Html.TextBoxFor(m => m.respondent, new { @class = "btn btn-default", @onclick = "yingsuren()", style = "width:500px;float:left", placeholder = "获取应诉人", id = "yingsurenname",Value=draft.Respondent })
+                                }
+                                else
+                                {
+                                    @Html.TextBoxFor(m => m.respondent, new { @class = "btn btn-default", @onclick = "yingsuren()", style = "width:500px;float:left", placeholder = "获取应诉人", id = "yingsurenname" })
+                                }
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(m => m.respondent, new { @class = "btn btn-default", @onclick = "yingsuren()", style = "width:500px;float:left", placeholder = "未登录用户不能获取应诉人", id = "yingsurenname",disabled="disabled" })
+                            }
+                            <p style="color:red;display:none" id="YSRerror">应诉人不能为空</p><div style="clear:both"></div>
+                            @Html.TextBoxFor(m => m.respondentid, new { style = "display:none", id = "yingsurenid" })
+                            @Html.TextBoxFor(m => m.respondentPhone, new { style = "display:none", id="yingsurenphone"})
+                            @Html.TextBoxFor(m => m.respondentEmail, new { style = "display:none", id="ringsurenemail"})
+                            @Html.TextBoxFor(m => m.respondentAddress, new { style = "display:none",id="yingsurenaddress"})
+                            @Html.TextBoxFor(m => m.respondentExplain, new { style = "display:none" ,id="yingsurenexplain"})
+                        </li>
+                        <li>
+                            <label>投诉人期望获得赔偿金额:<b>*</b></label>
+                            @if (draft != null)
+                            {
+                                @Html.TextBoxFor(m => m.paynum, new { @class = "form-control",Value=draft.originalpay ,style = "width:100px;;float:left;margin-top:30px", placeholder = "赔偿金额", id = "paynum", onkeyup = "this.value=this.value.replace(/\\D/g,'')" })<h4 style="float:left;margin-top:40px">元(人民币)</h4>
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(m => m.paynum, new { @class = "form-control", style = "width:100px;;float:left;margin-top:30px", placeholder = "赔偿金额", id = "paynum", onkeyup = "this.value=this.value.replace(/\\D/g,'')" })<h4 style="float:left;margin-top:40px">元(人民币)</h4>
+                            }
+                            <p style="color:red;display:none;" id="payerror">赔偿金额不能为空</p><div style="clear:both"></div>
+                        </li>
+                        <li>
+                            <label>额外补偿1:</label>
+                            @if (draft != null)
+                            {
+                                @Html.TextBoxFor(m => m.paymod1, new { @class = "form-control", style = "width:500px;", placeholder = "赔偿方式1(选填)",Value=draft.OtherPay1 })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(m => m.paymod1, new { @class = "form-control", style = "width:500px;", placeholder = "赔偿方式1(选填)",id="otherTxt1" })
+                            }
+                        </li>
+                        <li  style="display:none" id="otherLi2">
+                            <label>额外补偿2:</label>
+                            @if (draft != null)
+                            {
+                                @Html.TextBoxFor(m => m.paymod2, new { @class = "form-control", style = "width:500px;", placeholder = "赔偿方式2(选填)", Value = draft.OtherPay2 })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(m => m.paymod2, new { @class = "form-control", style = "width:500px;", placeholder = "赔偿方式2(选填)", id = "otherTxt2" })
+                            }
+                        </li>
+                        <li style="display:none" id="otherLi3">
+                            <label>额外补偿3:</label>
+                            @if (draft != null)
+                            {
+                                @Html.TextBoxFor(m => m.paymod3, new { @class = "form-control", style = "width:500px;", placeholder = "赔偿方式3(选填)",Value=draft.OtherPay3})
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(m => m.paymod3, new { @class = "form-control", style = "width:500px;", placeholder = "赔偿方式3(选填)", id = "otherTxt3" })
+                            }
+                        </li>
+                        <li>
+                            <label>案件描述:<b>*</b></label>
+                            @if (draft != null)
+                            {
+                                <textarea id = "content7" name="content" style = "resize:none;min-width:750px;height:360px;visibility:hidden;">@draft.StatementOfCase</textarea>
+                                @*@Html.TextAreaFor(m => m.content, new { id = "content7", style = "resize:none;min-width:750px;height:360px;visibility:hidden;" ,Value=draft.StatementOfCase})*@
+                            }
+                            else
+                            {
+                                @Html.TextAreaFor(m => m.content, new { id = "content7", style = "resize:none;min-width:750px;height:360px;visibility:hidden;" })
+                            }
+                            <p style="color:red;display:none" id="contenterror">案件内容不能为空</p>
+                        </li>
+                        <li>
+                            <label>视屏佐证:<b>*</b></label>
+                            <input class="form-control" style="width:500px;" readonly="readonly" placeholder="视频Url" />
+                        </li>
+                        <li>
+                            <label>操作:<b>*</b></label>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <input type="submit" class="btn btn-default" value="保存" name="savemod" />
+                                <input type="submit" class="btn btn-primary" value="提交" name="savemod" />
+                            }
+                            else
+                            {
+                                <input type="submit" class="btn btn-default" value="保存" name="savemod" disabled="disabled"/>
+                                <input type="submit" class="btn btn-primary" value="提交" name="savemod" disabled="disabled"/>
+                                <p>未登录用户不能发布案件</p>
+                            }
+                        </li>
+                    </ul>
+
+                </div>
+                <!--案件发布注意事项-->
+                <div class="notice">
+                    <div class="mod-head">
+                        <h3>《讲理平台投诉发布规则及注意事项》</h3>
+                    </div>
+                    <div class="mod-body">
+                        <p><b>• 1、</b> 依法、据实。不得捏造事实、诽谤他人、泄露他人隐私。同时也注意保护自己的隐私。</p>
+                        <p><b>• 2、</b> 谢绝以删帖作交易换取投诉解决。即便投诉解决后，您也不要找我们删帖。</p>
+                        <p><b>• 3、</b> 请填写真实的联系方式，尤其是电话和电子信箱。以便我们能及时与您联系。</p>
+                        <p><b>• 4、</b> 为便于被投诉方回应，请提供准确的被投诉方名称、地址、订单号、账号等信息。</p>
+                        <p><b>• 5、</b> 发帖时可以提交图片、视频，作为最直观的投诉证据。</p>
+                        <p><b>• 6、</b> 请勿重复发帖。后续相关信息（包括图片），您只需使用原账号在原帖评论框提交，即可继续显示在投诉正文区域。</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script src="~/Scripts/jquery-1.9.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<!--查找应诉人弹出框-->
+<div class="modal fade" id="yingsurenModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                查找应诉人
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#zhanNei" data-toggle="tab">站内检索(推荐)</a></li>
+                    <li><a href="#shouDong" data-toggle="tab">手动输入</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="zhanNei" style="margin-top:20px">
+                        <ul style="list-style:none">
+                            <li>
+                                <label style="width: 86px;line-height: 34px;display: block;float: left;">应诉人名称:</label>
+                                <input type="text" class="form-control" style="width:200px" id="searchname" name="searchname"/><div style="clear:both"></div>
+                            </li>
+                            <li>
+                                <label style="width: 86px;line-height: 34px;display: block;float: left;">应诉人电话:</label>
+                                <input type="text" class="form-control" style="width:200px" id="searchphone"/><div style="clear:both"></div>
+                            </li>
+                            <li>
+                                <label style="width: 86px;line-height: 34px;display: block;float: left;">应诉人邮箱:</label>
+                                <input type="text" class="form-control" style="width:200px;float:left" id="searchemail"/>
+                                <button class="btn btn-primary" onclick="yingsurendata.getName()">查找</button><div style="clear:both"></div>
+                            </li>
+                        </ul>
+                        <h4 style="color:#0a4ded">点击查找后请稍等!</h4><h5 style="color:red">(当同时检测到站内检索和手动输入时自动以站内检索为主要依据)</h5>
+                        <div style="text-align:center">
+                            <table class="table table-bordered" id="YSRsearchtable">
+                                <caption>查找结果显示:(提示:用户不再列表中时请使用手动输入，避免应诉人出错)</caption>
+                                <thead>
+                                    <tr>
+                                        <th>用户名</th>
+                                        <th>电话</th>
+                                        <th>邮箱</th>
+                                        <th>选择</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade content" id="shouDong" style="margin-top:20px">
+                        <ul style="list-style:none">
+                            <li>
+                                <label style="width: 86px;line-height: 34px;display: block;float: left;">应诉人名称:<b style="color:red">*</b></label>
+                                <input type="text" class="form-control" style="width:200px" id="inputname"/><div style="clear:both"></div>
+                            </li>
+                            <li>
+                                <label style="width: 86px;line-height: 34px;display: block;float: left;">应诉人电话:</label>
+                                <input type="text" class="form-control" style="width:200px" id="inputphone"/><div style="clear:both"></div>
+                            </li>
+                            <li>
+                                <label style="width: 86px;line-height: 34px;display: block;float: left;">应诉人邮箱:</label>
+                                <input type="text" class="form-control" style="width:200px" id="inputemail"/><div style="clear:both"></div>
+                            </li>
+                            <li>
+                                <label style="width: 86px;line-height: 34px;display: block;float: left;">应诉人地址:</label>
+                                <input type="text" class="form-control" style="width:200px" id="inputaddress"/><div style="clear:both"></div>
+                            </li>
+                            <li>
+                                <label style="width: 86px;line-height: 34px;display: block;float: left;">其他说明:</label>
+                                <input type="text" class="form-control" style="width:200px" id="inputexplain"/><div style="clear:both"></div>
+                            </li>
+                        </ul>
+                        <p style="color:gray">说明:请以最简洁的方式输入,为方便我们能尽可能准取得联系到应诉人,请尽可能详细的输入用户人信息</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"  onclick="yingsurendata.YSRConfirm()"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>确认</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    //额外赔偿方式的一次显示
+    $(function () {
+        $("#otherTxt1").change(function () {
+            if ($("#otherTxt1").val() != null) {
+                $("#otherLi2").css("display","block");
+            }
+            if ($("#otherTxt1").val() == null || $("#otherTxt1").val() == "")
+            {
+                $("#otherLi2").val("");
+                $("#otherLi3").val("");
+                $("#otherLi2").css("display", "none");
+                $("#otherLi3").css("display", "none");
+            }
+        });
+        $("#otherTxt2").change(function () {
+            if ($("#otherTxt2").val() != null) {
+                $("#otherLi3").css("display","block");
+            }
+            if ($("#otherTxt2").val() == null || $("#otherTxt2").val() == "")
+            {
+                $("#otherLi3").val("");
+                $("#otherLi3").css("display", "none");
+            }
+        });
+    })
+</script>

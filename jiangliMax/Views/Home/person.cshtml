@@ -1,0 +1,155 @@
+﻿
+@model DataDeal.Models.RepositoryModal.HomePerson
+@{
+    ViewBag.Title = "讲理-"+Model.username;
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+<!--个人主页-->
+<div class="person">
+    <div class="person-head">
+        <!--主页头像显示-->
+        <div style="float:left">
+            @if (Model.headimg != null)
+            {
+                <img src="@Model.headimg" height="100" />
+            }
+            else
+            {
+                <img src="~/img/Homeimg/0.jpg" height="100" />
+            }
+        </div>
+        <!--个人简介-->
+        <div class="personmessage">
+            <p>@Model.username</p>
+            <h5>
+                @if (Model.hobby != null)
+                {
+                    @:简介: @Model.hobby
+                }
+                else
+                {
+                    @:暂无简介
+                }
+            </h5>
+            @if (Model.username == User.Identity.Name)
+            {
+                <a href="/home/personinfo?userid=@Model.userid" class="btn btn-primary" style="margin-left:700px">编辑个人资料</a>
+            }
+        </div>
+        <div style="clear:both"></div>
+    </div>
+    <!--个人主页详细信息-->
+    <div class="person-content">
+        <ul id="myTab" class="nav nav-tabs">
+            <!--我的案件-->
+            <li class="dropdown" >
+                <a href="#" id="myTabDrop1" class="dropdown-toggle"
+                   data-toggle="dropdown">
+                    案件 <b class="caret"></b>
+                </a>
+                <!--我的案件下拉列表-->
+                <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                    <li>
+                        <a href="#mypublish" tabindex="-1" data-toggle="tab">
+                            发布
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#myfinish" tabindex="-1" data-toggle="tab">
+                            完成
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!--我关注的案件-->
+            <li>
+                <a href="#follow" data-toggle="tab">关注</a>
+            </li>
+            <!--参与的案件-->
+            <li><a href="#relative" data-toggle="tab">参与</a></li>
+            <!--权重显示-->
+            <li><a href="#weight" data-toggle="tab">群商</a></li>
+            @if (User.Identity.IsAuthenticated)
+            {
+                if (User.Identity.Name == Model.username)
+                {
+                    <!--我的审核-->
+                    <li><a href="#ShenHe" data-toggle="tab">审核</a></li>
+                    <!--我的申诉-->
+                    <li><a href="#ShenSu" data-toggle="tab">申诉</a></li>
+                    <!--我的草稿-->
+                    <li><a href="#CaoGao" data-toggle="tab">草稿模板</a></li>
+                }
+            }
+        </ul>
+        <!--不同选择对应的案件列表显示-->
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="myfinish">
+                <p style="margin-left:80px">已完成案件</p>
+                @foreach (var item in Model.finishlist)
+                {
+                    @Html.Partial("_personCaselist", item)
+                }
+            </div>
+            <div class="tab-pane fade" id="mypublish">
+                <p style="margin-left:80px">已发布案件</p>
+                @foreach (var item in Model.publishlist)
+                {
+                    @Html.Partial("_personCaselist",item)
+                }
+            </div>
+            <div class="tab-pane fade" id="follow">
+                <p style="margin-left:80px">关注案件</p>
+                @foreach (var item in Model.followlist)
+                {
+                    @Html.Partial("_personCaselist", item.FirstOrDefault())
+                }
+            </div>
+            <div class="tab-pane fade" id="relative">
+                <p style="margin-left:80px">参与的案件</p>
+                @foreach (var item in Model.participatelist)
+                {
+                    @Html.Partial("_personCaselist", item.FirstOrDefault())
+                }
+            </div>
+            <div class="tab-pane fade" id="weight">
+                <p style="margin-left:80px">群商变化曲线</p>
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                //登录后确认是否是本人
+                if (User.Identity.Name == Model.username)
+                {
+                    var usercase = ViewBag.UserCase as DataDeal.Models.RepositoryModal.UserCase;
+                    <div class="tab-pane fade" id="ShenHe">
+                        <p style="margin-left:80px">审核中的案件</p>
+                        @foreach (var item in usercase.shenhelist)
+                        {
+                            @Html.Partial("_personCaselist", item)
+                        }
+                    </div>
+                    <div class="tab-pane fade" id="ShenSu">
+                        <p style="margin-left:80px">申诉中的案件</p>
+                        @foreach (var item in usercase.shensulist)
+                        {
+                            @Html.Partial("_personCaselist", item)
+                        }
+                    </div>
+                    <div class="tab-pane fade" id="CaoGao">
+                        <p style="margin-left:80px">我的草稿</p>
+                        @foreach (var item in usercase.caogaolist)
+                        {
+                            @Html.Partial("_personCaselist", item)
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<script>
+	$(function () {
+		$('#myTab li:eq(1) a').tab('show');
+	});
+</script>
+

@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewBag.Title = "讲理--公平的世界你做主";
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+@model List<DataDeal.Models.RepositoryModal.HomeCase>
+<!--话题首页的整体布局-->
+<div class="shouye">
+    <!--左侧排行榜-->
+    @if (false)
+    {
+        <div class="paihang">
+            @Html.Partial("_paihang")
+        </div>
+    }
+    <!--右侧的栏目显示-->
+    <div class="rightBar">
+        @Html.Partial("_rightlist",Model)
+    </div>
+    <!--中间的案件列表显示-->
+    <div class="center">
+        @if (Model != null)
+        {
+            foreach (var caseitem in Model)
+            {
+                @Html.Partial("_caselistitem",caseitem)
+            }
+        }
+        else
+        {
+            @:暂无已发布案件数据
+        }
+    </div>
+</div>
+

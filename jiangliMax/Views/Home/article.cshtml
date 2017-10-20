@@ -1,0 +1,443 @@
+﻿@using Microsoft.AspNet.Identity
+@model DataDeal.Models.RepositoryModal.publiccaseitem
+@{
+    ViewBag.Title = "讲理-"+Model.casetitle;
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+<script src="~/Scripts/Home/article.js"></script>
+@{ 
+    var item = new DataDeal.Models.M_Involve();
+    if (ViewBag.verdict != null)
+    {
+        item = ViewBag.verdict as DataDeal.Models.M_Involve;
+    }
+}
+<!--文章主题显示-->
+<div class="article">
+    <!--左侧栏显示案件的简介信息和状态信息-->
+    <div class="Aleft">
+        <div class="Amessage" style="border-top:none">
+            <p>投诉人</p>
+            @if (getHeadImg.GetHeadById(Model.publishid) == null)
+            {
+                <img src="~/img/Homeimg/0.jpg" height="24" />
+            }
+            else
+            {
+                <img src="@getHeadImg.GetHeadById(Model.publishid)" height="24" />
+            }
+            <a href="/home/person?userid=@Model.publishid">@Model.publishname</a>
+        </div>
+        <div class="Amessage">
+            <p>应诉人</p>
+            @if (Model.respondentid == null)
+            {
+                <img src="~/img/Homeimg/0.jpg" height="24" />
+                @Model.respondentname
+                @:(手动输入用户)
+                if (@Model.caseinfo.RespondentAddress != null)
+                {
+                    <div style="margin-top:10px">地址：@Model.caseinfo.RespondentAddress</div>
+                }
+                if (@Model.caseinfo.RespondentEmail != null)
+                {
+                    <div>邮箱：@Model.caseinfo.RespondentEmail</div>
+                }
+                if (@Model.caseinfo.RespondentPhone != null)
+                {
+                    <div>电话：@Model.caseinfo.RespondentPhone</div>
+                }
+            }
+            else
+            {
+                <img src="@getHeadImg.GetHeadById(Model.respondentid)" height="24" />
+                <a href="/home/person?userid=@Model.respondentid">@Model.respondentname</a>
+            }
+        </div>
+        <div class="Amessage">
+            <p>期望赔偿金额：<label style="color:#000">@Model.caseinfo.originalpay 元</label></p>
+            @if (Model.caseinfo.OtherPay1 != null)
+            {
+                <p>其他赔偿1：<label style="color:#000">@Model.caseinfo.OtherPay1</label></p>
+            }
+            @if (Model.caseinfo.OtherPay2 != null)
+            {
+                <p>其他赔偿1：<label style="color:#000">@Model.caseinfo.OtherPay2</label></p>
+            }
+            @if (Model.caseinfo.OtherPay3 != null)
+            {
+                <p>其他赔偿1：<label style="color:#000">@Model.caseinfo.OtherPay3</label></p>
+            }
+            <p>案件状态:<label style="color:#000">@getDateTime.getCaseState(Model.casestate)</label></p>
+            <p>发布时间:<label style="color:#000">@getDateTime.Get(Model.caseinfo.DateOfBegin)</label></p>
+            <p id="followP">关注:<label style="color:#000">@Model.follow.Count()</label></p>
+            <p>裁决:<label style="color:#000">@Model.verdict.Count()</label></p>
+            @if (User.Identity.IsAuthenticated)
+            {
+                var userid = User.Identity.GetUserId();
+                if (Model.follow.Where(t => t.userid == userid).Count() == 1)
+                {
+                    <p><button class="btn btn-info" onclick="RemoveFow()" id="removeFollow">取消关注</button></p>
+                }
+                else
+                {
+                    <p><button class="btn btn-danger" onclick="addFow()" id="addFollow">添加关注</button></p>
+                }
+            }
+            <!--案件只有在发布状态下才可以进行裁决-->
+            @if (Model.casestate == DataDeal.WholeSituation.CaseState.PUBLISH)
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    if (ViewBag.verdict == null)
+                    {
+                        <button class="btn btn-primary" onclick="javascript:window.location.href='/home/verdict?id=@Model.caseid'">开始裁决</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" onclick="javascript:window.location.href='/home/verdict?id=@Model.caseid'">修改裁决</button>
+                    }
+                }
+            }
+        </div>
+    </div>
+    <!--案件的详细信息-->
+    <div class="Acenter">
+        <div class="panel panel-info" style="margin:0">
+            <!--案件标题-->
+            <div class="panel-heading" style="text-align:">
+                <h3 class="panel-title">
+                    <span style="font-weight:600;">标题: @Model.casetitle</span>
+                    <span class="bdsharebuttonbox pull-right"><a href="#" class="bds_more" data-cmd="more">分享到：</a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a></span>
+                    <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{"bdSize":16},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='https://www.jianglichina.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+                </h3>
+            </div>
+            <!--案件内容在html.raw中显示信息-->
+            <div style="overflow:hidden;white-space:normal; word-break:break-all; ">
+                @Html.Raw(Model.casecontent)
+            </div>
+        </div>
+        <!--显示申诉过程和内容-->
+        <div class="panel panel-info" style="margin:0">
+            <div class="panel-heading" style="text-align:center">
+                <h3 class="panel-title">
+                    <span style="font-weight:600">双方申诉（暂未开放）</span>
+                </h3>
+            </div>
+            <div class="shensu">
+                <span>第一次申诉:</span><label> 未开放</label>
+                @*<p>投诉人:</p>
+                <p>应诉人:</p>*@
+            </div>
+            <div class="shensu">
+                <span>第二次申诉:</span><label> 未开放</label>
+            </div>
+            <div class="shensu">
+                <span>第三次申诉:</span><label> 未开放</label>
+            </div>
+        </div>
+        <!--用户的裁决内容显示-->
+        <div class="panel panel-info"> 
+            <div class="panel-heading" style="text-align:center">
+                <h3 class="panel-title">
+                    <span style="font-weight:600;color:#0694f2">我的裁决</span>
+                </h3>
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                if (ViewBag.verdict != null)
+                {
+                    <div>
+                        <!--裁决详细信息-->
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>最满意的赔偿</th>
+                                    <th>如果不赔偿的满意度</th>
+                                    @if (item.ModeOfPay == 1)
+                                    {
+                                        <th>赔偿是两倍时候的满意度</th>
+                                    }
+                                    else
+                                    {
+                                        <th>赔偿是 @Model.caseinfo.originalpay 时候的满意度</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@item.MostSatisfied</td>
+                                    <td>@item.NonSatisfied</td>
+                                    <td>@item.DoublePay</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-hover table-bordered table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>其他赔偿方式</th>
+                                    <th>满意度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.caseinfo.OtherPay1 != null)
+                                {
+                                    <tr>
+                                        <td>@Model.caseinfo.OtherPay1</td>
+                                        <td>@item.OtherNum1</td>
+                                    </tr>
+                                }
+                                @if (Model.caseinfo.OtherPay2 != null)
+                                {
+                                    <tr>
+                                        <td>@Model.caseinfo.OtherPay2</td>
+                                        <td>@item.OtherNum2</td>
+                                    </tr>
+                                }
+                                @if (Model.caseinfo.OtherPay3!=null)
+                                {
+                                    <tr>
+                                        <td>@Model.caseinfo.OtherPay3</td>
+                                        <td>@item.OtherNum3</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <label>裁决原因:@item.AssignmentExplain</label>
+                        @if (item.ModeOfPay == 1)
+                        {
+                             <!--裁决曲线显示-->
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>赋值曲线</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="flot-chart">
+                                        <div class="flot-chart-content" id="flot-chart-line"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div></div>
+                        }
+                        else
+                        {
+                            <p>赔偿方式为互不赔偿，没有赋值曲线</p>
+                        }
+                    </div>
+                }
+                else
+                {
+                    @:暂无裁决（点击裁决立即进行裁决）
+                }
+            }
+        </div>
+    </div>
+    <!--案件评论区-->
+    <div class="Aright">
+        <label>案件评论</label>
+        <!--评论列表-->
+        <div class="commentlist" id="commentlist">
+            @if (Model.comment.Count() > 0)
+            {
+                foreach (var Citem in Model.comment)
+                {
+                    if (getHeadImg.GetHeadById(Citem.UserID) == null)
+                    {
+                        <img src="~/img/Homeimg/0.jpg" height="24" style="margin-left:20px;margin-top:5px;" />
+                    }
+                    else
+                    {
+                        <img src="@getHeadImg.GetHeadById(Citem.UserID)" height="24" style="margin-left:20px;margin-top:5px;" />
+                    }
+                    <a href="/home/person?userid=@Citem.UserID">@Citem.UserName</a>
+                    <label class="pull-right" style="font-size:11px">时间:@getDateTime.Get(Citem.Date)</label>
+                    <div class="Ccontent">
+                        <p>@Citem.Content</p>
+                        @*<button class="btn btn-primary pull-right" style=""><i class="glyphicon glyphicon-thumbs-up"></i></button>*@
+                        <div style="clear:both"></div>
+                    </div>
+                }
+            }
+            else
+            {
+                @:暂无评论
+            }
+        </div>
+        <div class="form-group">
+            <!--发表评论-->
+            <div class="input-group">
+                @*<input type="text" class="form-control" style="width:300px" placeholder="输入评论内容" id="discuss"/>*@
+                <textarea class="form-control" style="min-width:360px;max-width:360px;min-height:100px;max-height:100px" placeholder="输入评论内容" id="discuss"></textarea><br /><br />
+                <button class="btn btn-primary" onclick="putComment()" style="width:350px">提交</button>
+            </div>
+        </div>
+    </div>
+    <div style="clear:both"></div>
+</div>
+<script>
+    //加载完成后显示曲线图
+    $(document).ready(function () {
+        //获取案件信息
+        var data = {point:"@item.PointList"};
+        var point = data.point;
+        //正则表达式替换
+        re = new RegExp("&quot;","g");
+        var str = point.replace(re,"\"");
+        //字符串转化为json字符串
+        var jsondata = JSON.parse(str);
+        //json字符串里面的点集合
+        mydata = jsondata.data.curve;
+        var offset = 0;
+        plot();
+        var temp = mydata.data.curve;
+        function plot() {
+            ////数据sin cos
+            //var sin = [], cos = [];
+            ////制造数据
+            //for (var i = 0; i < 12; i += 0.2) {
+            //    sin.push([i, Math.sin(i + offset)]);
+            //    cos.push([i, Math.cos(i + offset)]);
+            //}
+            var options = {
+                series: {
+                    lines: { show: true },
+                    points: { show: true }
+                },
+                grid: {
+                    hoverable: true //IMPORTANT! this is needed for tooltip to work
+                },
+                yaxis: { min: -10, max: 10 },
+                tooltip: true,
+                tooltipOpts: {
+                    content: "'赋值' of %x.1 is %y.4",
+                    shifts: {
+                        x: -60,
+                        y: 25
+                    }
+                }
+            };
+            //#flot-chart-line 是要显示曲线位置的div id
+            var plotObj = $.plot($("#flot-chart-line"),
+                [{ data: mydata, label: "@Model.publishname" },],
+                options);
+        }
+    })
+</script>
+<script>
+    function putComment() {
+        var content = $("#discuss").val();
+        if (content == "") {
+            alert("内容不能为空");
+            return false;
+        }
+
+        $.ajax({
+            url: '/search/discuss',
+            type: 'post',
+            data: {
+                content: content,
+                caseid:@Model.caseid,
+            },
+            success: function (data) {
+                if(data=="true"){
+                    alert("评论成功");
+                    location.reload();
+                }
+                else {
+                    alert("评论失败！");
+                }
+            }
+        })
+    }
+    function RemoveFow() {
+        var str = $("#removeFollow").html();
+        str = str.replace(/\d/ig,'').trim();
+        if(str=="取消关注"){
+            $.ajax({
+                url: '/search/addFollow',
+                type: 'post',
+                data: {
+                    caseid:@Model.caseid,
+                    type:0
+                },
+                success:function(data){
+                    if(data.result==true){
+                        $("#removeFollow").html("添加关注");
+                        $("#removeFollow").addClass("btn-danger");
+                        $("#followP").text("关注:"+data.num);
+                    }
+                    else {
+                        alert("取消关注失败");
+                    }
+                }
+            })
+        }
+        else{
+            $.ajax({
+                url: '/search/addFollow',
+                type: 'post',
+                data: {
+                    caseid:@Model.caseid,
+                    type:1
+                },
+                success:function(data){
+                    if(data.result==true){
+                        $("#removeFollow").html("取消关注");
+                        $("#removeFollow").removeClass("btn-danger");
+                        $("#followP").text("关注:"+data.num);
+                    }
+                    else {
+                        alert("添加关注失败");
+                    }
+                }
+            })
+        }
+    }
+    function addFow() {
+        var str = $("#addFollow").html();
+        str = str.replace(/\d/ig,'').trim();
+        if(str=="添加关注")
+        {
+            $.ajax({
+                url: '/search/addFollow',
+                type: 'post',
+                data: {
+                    caseid:@Model.caseid,
+                    type:1
+                },
+                success:function(data){
+                    if(data.result==true){
+                        $("#addFollow").html("取消关注");
+                        $("#addFollow").addClass("btn-danger");
+                        $("#followP").text("关注:"+data.num);
+                    }
+                    else {
+                        alert("添加关注失败");
+                    }
+                }
+            })
+        }
+        else {
+            $.ajax({
+                url: '/search/addFollow',
+                type: 'post',
+                data: {
+                    caseid:@Model.caseid,
+                    type:0
+                },
+                success:function(data){
+                    if(data.result==true){
+                        $("#addFollow").html("添加关注");
+                        $("#addFollow").removeClass("btn-danger");
+                        $("#followP").text("关注:"+data.num);
+                    }
+                    else {
+                        alert("取消关注失败");
+                    }
+                }
+            })
+        }
+
+    }
+</script>
