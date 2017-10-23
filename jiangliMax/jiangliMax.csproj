@@ -639,6 +639,8 @@
     <Content Include="Views\Manager\Index.cshtml" />
     <Content Include="Views\Manager\Top.cshtml" />
     <Content Include="Views\Manager\Left.cshtml" />
+    <Content Include="Views\Shared\_LayoutManager.cshtml" />
+    <Content Include="Views\Manager\WorkPlace.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

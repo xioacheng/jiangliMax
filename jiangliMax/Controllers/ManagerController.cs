@@ -8,6 +8,10 @@ namespace jiangliMax.Controllers
 {
     public class ManagerController : Controller
     {
+        public ActionResult WorkPlace()
+        {
+            return View();
+        }
         // GET: Manager
         public ActionResult Index()
         {
